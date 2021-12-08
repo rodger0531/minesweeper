@@ -53,8 +53,11 @@ mineGrid.forEach((row, rowIdx) => {
 
 function App() {
   const [mineField, setMineField] = useState(mineGrid);
+  const [depressed, setDepressed] = useState([]);
+
   const onClickBlock = (block, row, col) => {
     if (!block.revealed) {
+      console.log("onclick");
       if (block.mine) {
         console.log("Boom!");
       } else {
@@ -65,6 +68,17 @@ function App() {
       }
     }
   };
+
+  const mouseDownHandler = (e, block) => {
+    if (e.button === 0 && block.revealed) {
+      console.log("left clicking");
+    }
+  };
+
+  const mouseUpHandler = () => {
+    if (depressed.length !== 0) {
+      console.log("mouse up");
+    }
   };
 
   return (
@@ -87,6 +101,9 @@ function App() {
                   "shadow-inner text-gray-700 flex items-center justify-center"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
+                onContextMenu={(e) => e.preventDefault()}
+                onMouseDown={(e) => mouseDownHandler(e, block)}
+                onMouseUp={mouseUpHandler}
               >
                 {block.minesNearby}
               </div>
