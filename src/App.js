@@ -69,15 +69,62 @@ function App() {
     }
   };
 
-  const mouseDownHandler = (e, block) => {
+
+  const mouseDownHandler = (e, block, row, col) => {
     if (e.button === 0 && block.revealed) {
+      // Depress unflagged neighbouring blocks
+      depressBlocks(row, col);
       console.log("left clicking");
+    }
+  };
+
+  const depressBlocks = (row, col) => {
+    const blocks = [];
+    const dir = [-1, 0, 1];
+
+    console.log("in", row, col);
+
+    const checkValidForDepressed = (row, col) => {
+      if (
+        row > -1 &&
+        col > -1 &&
+        row < 10 &&
+        col < 10 &&
+        !mineField[row][col].flagged &&
+        !mineField[row][col].revealed
+      ) {
+        blocks.push([row, col]);
+      }
+    };
+    for (let i = 0; i < dir.length; i++) {
+      for (let j = 0; j < dir.length; j++) {
+        checkValidForDepressed(row + dir[i], col + dir[j]);
+      }
+    }
+
+    if (blocks.length > 0) {
+      setDepressed(blocks);
+      setMineField((prev) => {
+        blocks.forEach(([row, col]) => {
+          prev[row][col].depressed = true;
+        });
+        return [...prev];
+      });
     }
   };
 
   const mouseUpHandler = () => {
     if (depressed.length !== 0) {
-      console.log("mouse up");
+      // if not (but correct) show depressed blocks
+      // if wrong - lose
+      setMineField((prev) => {
+        depressed.forEach(([row, col]) => {
+          prev[row][col].depressed = false;
+        });
+        return [...prev];
+      });
+      setDepressed([]);
+      console.log("mouse up", depressed);
     }
   };
 
@@ -101,11 +148,10 @@ function App() {
                   "shadow-inner text-gray-700 flex items-center justify-center"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
-                onContextMenu={(e) => e.preventDefault()}
-                onMouseDown={(e) => mouseDownHandler(e, block)}
+                onMouseDown={(e) => mouseDownHandler(e, block, rowIdx, colIdx)}
                 onMouseUp={mouseUpHandler}
               >
-                {block.minesNearby}
+                {block.revealed ? block.minesNearby : block.flagged ? "🚩" : ""}
               </div>
             ))
           )}
