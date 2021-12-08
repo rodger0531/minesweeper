@@ -61,10 +61,31 @@ function App() {
       if (block.mine) {
         console.log("Boom!");
       } else {
-        setMineField((prev) => {
-          prev[row][col].revealed = true;
-          return [...prev];
-        });
+        let tempMineField = [...mineField];
+        if (tempMineField[row][col].minesNearby) {
+          tempMineField[row][col].revealed = true;
+        } else {
+          tempMineField = revealAllValid(tempMineField, row, col);
+        }
+        setMineField(tempMineField);
+      }
+    }
+  };
+
+  const revealAllValid = (field, row, col) => {
+    const dir = [-1, 0, 1];
+    checkValid(row, col);
+    return field;
+    function checkValid(x, y) {
+      if (x > -1 && y > -1 && x < 10 && y < 10 && !field[x][y].revealed) {
+        field[x][y].revealed = true;
+        if (!field[x][y].minesNearby) {
+          for (let i = 0; i < dir.length; i++) {
+            for (let j = 0; j < dir.length; j++) {
+              checkValid(x + dir[i], y + dir[j]);
+            }
+          }
+        }
       }
     }
   };
@@ -72,7 +93,7 @@ function App() {
   const rightClick = (e, block, row, col) => {
     e.preventDefault();
     if (!block.revealed) {
-      const tempMineField = mineField;
+      const tempMineField = [...mineField];
       tempMineField[row][col].flagged = !tempMineField[row][col].flagged;
       setMineField([...tempMineField]);
     }
@@ -87,7 +108,6 @@ function App() {
 
   const depressBlocks = (row, col) => {
     const blocks = [];
-    const dir = [-1, 0, 1];
 
     const checkValidForDepressed = (row, col) => {
       if (
@@ -101,6 +121,9 @@ function App() {
         blocks.push([row, col]);
       }
     };
+
+    const dir = [-1, 0, 1];
+
     for (let i = 0; i < dir.length; i++) {
       for (let j = 0; j < dir.length; j++) {
         checkValidForDepressed(row + dir[i], col + dir[j]);
@@ -156,7 +179,13 @@ function App() {
                 onMouseDown={(e) => mouseDownHandler(e, block, rowIdx, colIdx)}
                 onMouseUp={mouseUpHandler}
               >
-                {block.revealed ? block.minesNearby : block.flagged ? "🚩" : ""}
+                {block.revealed
+                  ? block.minesNearby === 0
+                    ? ""
+                    : block.minesNearby
+                  : block.flagged
+                  ? "🚩"
+                  : ""}
               </div>
             ))
           )}
