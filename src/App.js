@@ -58,7 +58,6 @@ function App() {
 
   const onClickBlock = (block, row, col) => {
     if (!block.revealed) {
-      console.log("onclick");
       if (block.mine) {
         console.log("Boom!");
       } else {
@@ -83,15 +82,12 @@ function App() {
     if (e.button === 0 && block.revealed) {
       // Depress unflagged neighbouring blocks
       depressBlocks(row, col);
-      console.log("left clicking");
     }
   };
 
   const depressBlocks = (row, col) => {
     const blocks = [];
     const dir = [-1, 0, 1];
-
-    console.log("in", row, col);
 
     const checkValidForDepressed = (row, col) => {
       if (
@@ -133,7 +129,6 @@ function App() {
         return [...prev];
       });
       setDepressed([]);
-      console.log("mouse up", depressed);
     }
   };
 
