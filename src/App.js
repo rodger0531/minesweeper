@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { nanoid } from "nanoid";
+import classNames from "classnames";
 
 const nums = new Set();
 while (nums.size !== 10) {
@@ -21,6 +23,7 @@ let mineGrid = new Array(10).fill().map((_, row) =>
       mine: hasMine(row, col),
       minesNearby: 0,
       revealed: false,
+      depressed: false,
       id: nanoid(),
     };
   })
@@ -49,24 +52,43 @@ mineGrid.forEach((row, rowIdx) => {
 });
 
 function App() {
-  const onClickBlock = () => {
-    console.log("clicked");
+  const [mineField, setMineField] = useState(mineGrid);
+  const onClickBlock = (block, row, col) => {
+    if (!block.revealed) {
+      if (block.mine) {
+        console.log("Boom!");
+      } else {
+        setMineField((prev) => {
+          prev[row][col].revealed = true;
+          return [...prev];
+        });
+      }
+    }
+  };
   };
 
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex items-center justify-center bg-gray-100 p-12 rounded ">
         <div className="grid grid-cols-10">
-          {mineGrid.map((row) =>
-            row.map((col) => (
+          {mineField.map((row, rowIdx) =>
+            row.map((block, colIdx) => (
               <div
-                key={col.id}
-                className={`h-6 w-6 m-px ${
-                  col.mine ? "bg-red-400" : "bg-gray-400"
-                } shadow-inner text-gray-700 flex items-center justify-center`}
-                onClick={onClickBlock}
+                key={block.id}
+                className={classNames(
+                  "h-6 w-6 m-px",
+                  block.depressed
+                    ? "bg-gray-600"
+                    : block.mine
+                    ? "bg-red-400"
+                    : block.revealed
+                    ? "bg-gray-500"
+                    : "bg-gray-400",
+                  "shadow-inner text-gray-700 flex items-center justify-center"
+                )}
+                onClick={() => onClickBlock(block, rowIdx, colIdx)}
               >
-                {col.minesNearby}
+                {block.minesNearby}
               </div>
             ))
           )}
