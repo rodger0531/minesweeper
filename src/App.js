@@ -115,7 +115,6 @@ function App() {
         col > -1 &&
         row < 10 &&
         col < 10 &&
-        !mineField[row][col].flagged &&
         !mineField[row][col].revealed
       ) {
         blocks.push([row, col]);
@@ -131,13 +130,14 @@ function App() {
     }
 
     if (blocks.length > 0) {
-      setDepressed(blocks);
-      setMineField((prev) => {
-        blocks.forEach(([row, col]) => {
-          prev[row][col].depressed = true;
-        });
-        return [...prev];
+      const tempMineField = [...mineField];
+      blocks.forEach(([row, col]) => {
+        if (!tempMineField[row][col].flagged) {
+          tempMineField[row][col].depressed = true;
+        }
       });
+      setDepressed(blocks);
+      setMineField(tempMineField);
     }
   };
 
@@ -145,12 +145,29 @@ function App() {
     if (depressed.length !== 0) {
       // if not (but correct) show depressed blocks
       // if wrong - lose
-      setMineField((prev) => {
-        depressed.forEach(([row, col]) => {
-          prev[row][col].depressed = false;
-        });
-        return [...prev];
+      let tempMineField = [...mineField];
+
+      const wrongGuess = depressed.some(
+        ([row, col]) =>
+          tempMineField[row][col].flagged && !tempMineField[row][col].mine
+      );
+      const allSolved = depressed.every(
+        ([row, col]) =>
+          tempMineField[row][col].flagged === tempMineField[row][col].mine
+      );
+
+      if (wrongGuess) console.log("lose");
+
+      depressed.forEach(([row, col]) => {
+        if (allSolved && !tempMineField[row][col].mine) {
+          tempMineField[row][col].revealed = true;
+          if (!tempMineField[row][col].minesNearby) {
+            tempMineField = revealAllValid(tempMineField, row, col);
+          }
+        }
+        tempMineField[row][col].depressed = false;
       });
+      setMineField(tempMineField);
       setDepressed([]);
     }
   };
