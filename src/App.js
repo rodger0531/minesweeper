@@ -24,6 +24,7 @@ let mineGrid = new Array(10).fill().map((_, row) =>
       minesNearby: 0,
       revealed: false,
       depressed: false,
+      flagged: false,
       id: nanoid(),
     };
   })
@@ -69,6 +70,14 @@ function App() {
     }
   };
 
+  const rightClick = (e, block, row, col) => {
+    e.preventDefault();
+    if (!block.revealed) {
+      const tempMineField = mineField;
+      tempMineField[row][col].flagged = !tempMineField[row][col].flagged;
+      setMineField([...tempMineField]);
+    }
+  };
 
   const mouseDownHandler = (e, block, row, col) => {
     if (e.button === 0 && block.revealed) {
@@ -148,6 +157,7 @@ function App() {
                   "shadow-inner text-gray-700 flex items-center justify-center"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
+                onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
                 onMouseDown={(e) => mouseDownHandler(e, block, rowIdx, colIdx)}
                 onMouseUp={mouseUpHandler}
               >
