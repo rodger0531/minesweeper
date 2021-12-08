@@ -160,8 +160,9 @@ function App() {
 
       depressed.forEach(([row, col]) => {
         if (allSolved && !tempMineField[row][col].mine) {
-          tempMineField[row][col].revealed = true;
-          if (!tempMineField[row][col].minesNearby) {
+          if (tempMineField[row][col].minesNearby) {
+            tempMineField[row][col].revealed = true;
+          } else {
             tempMineField = revealAllValid(tempMineField, row, col);
           }
         }
