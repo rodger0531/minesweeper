@@ -46,8 +46,8 @@ function App() {
       if (
         row > -1 &&
         col > -1 &&
-        row < 10 &&
-        col < 10 &&
+        row < mineField.length &&
+        col < mineField[0].length &&
         !mineField[row][col].revealed
       ) {
         blocks.push([row, col]);

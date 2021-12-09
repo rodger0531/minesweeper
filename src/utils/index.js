@@ -23,7 +23,13 @@ export function revealAllValid(field, row, col) {
   return field;
 
   function checkValid(x, y) {
-    if (x > -1 && y > -1 && x < 10 && y < 10 && !field[x][y].revealed) {
+    if (
+      x > -1 &&
+      y > -1 &&
+      x < field.length &&
+      y < field[0].length &&
+      !field[x][y].revealed
+    ) {
       field[x][y].revealed = true;
       if (!field[x][y].minesNearby) {
         for (let i = 0; i < dir.length; i++) {
