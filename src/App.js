@@ -16,6 +16,7 @@ function App() {
   const [depressed, setDepressed] = useState([]);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.PLAYING);
   const [clicking, setClicking] = useState(false);
+  const [clickedMine, setClickedMine] = useState();
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.LOST) {
@@ -51,6 +52,7 @@ function App() {
     ) {
       if (block.mine) {
         setGameStatus(GAME_STATUS.LOST);
+        setClickedMine({ row, col });
       } else {
         let tempMineField = [...mineField];
         tempMineField = revealNearby(tempMineField, row, col);
@@ -150,21 +152,6 @@ function App() {
     return tempMineField;
   }
 
-  const blockConditionalBackgroundColor = (block) => {
-    // For testing
-    // if (block.mine) return "bg-red-600";
-
-    if (gameStatus === GAME_STATUS.LOST) {
-      if (block.flagged) {
-        if (!block.revealed) return "bg-red-300";
-      } else {
-        if (block.mine) return "bg-red-600";
-      }
-    }
-    if (block.flagged && gameStatus === GAME_STATUS.WIN) return "bg-green-700";
-    return "bg-gray-400";
-  };
-
   const emojiConditionalDisplay = () => {
     if (clicking) return ":O";
     switch (gameStatus) {
@@ -206,12 +193,18 @@ function App() {
                 key={block.id}
                 className={classNames(
                   "h-10 w-10 border border-gray-500 shadow-inner relative",
-                  blockConditionalBackgroundColor(block),
+                  block.flagged && gameStatus === GAME_STATUS.WIN
+                    ? "bg-green-700"
+                    : "bg-gray-400",
                   "text-xl font-minesweeper",
                   blockConditionalFontColour(block),
                   ((!block.revealed && !block.depressed) ||
                     (block.revealed && block.flagged)) &&
-                    "block-border"
+                    "block-border",
+                  clickedMine &&
+                    rowIdx === clickedMine.row &&
+                    colIdx === clickedMine.col &&
+                    "bg-red-600"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
