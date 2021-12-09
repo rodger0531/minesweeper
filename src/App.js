@@ -147,6 +147,34 @@ function App() {
     });
   }
 
+  const blockConditionalDisplay = (block) => {
+    if (block.revealed) {
+      if (block.mine) {
+        if (block.flagged) return "🚩";
+        else return "💥";
+      }
+      if (block.minesNearby !== 0) return block.minesNearby;
+    } else {
+      if (block.flagged) return "🚩";
+    }
+    return "";
+  };
+
+  const blockConditionalBackgroundColor = (block) => {
+    if (gameStatus === GAME_STATUS.LOST) {
+      if (block.flagged) {
+        if (!block.revealed) return "bg-red-300";
+      } else {
+        if (block.mine) return "bg-red-600";
+      }
+    }
+
+    if (block.depressed) return "bg-gray-500";
+    if (block.flagged) return "bg-gray-400";
+    if (block.revealed) return "bg-gray-500";
+    else return "bg-gray-400";
+  };
+
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex items-center justify-center bg-gray-100 p-12 rounded ">
@@ -157,13 +185,7 @@ function App() {
                 key={block.id}
                 className={classNames(
                   "h-6 w-6 m-px",
-                  block.depressed
-                    ? "bg-gray-600"
-                    : block.mine
-                    ? "bg-red-400"
-                    : block.revealed
-                    ? "bg-gray-500"
-                    : "bg-gray-400",
+                  blockConditionalBackgroundColor(block),
                   "shadow-inner text-gray-900 flex items-center justify-center"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
@@ -171,13 +193,7 @@ function App() {
                 onMouseDown={(e) => mouseDownHandler(e, block, rowIdx, colIdx)}
                 onMouseUp={mouseUpHandler}
               >
-                {block.revealed
-                  ? block.minesNearby === 0
-                    ? ""
-                    : block.minesNearby
-                  : block.flagged
-                  ? "🚩"
-                  : ""}
+                {blockConditionalDisplay(block)}
               </div>
             ))
           )}
