@@ -1,23 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import classNames from "classnames";
 import generateMineField from "./utils/generateMineFIeld";
 import { revealAllValid } from "./utils";
 
+const [mineLocations, initialMineField] = generateMineField();
+
 function App() {
-  const [mineField, setMineField] = useState(generateMineField());
+  const [mineField, setMineField] = useState(initialMineField);
   const [depressed, setDepressed] = useState([]);
+  const [gameLost, setGameLost] = useState(false);
+
+  useEffect(() => {
+    if (gameLost) {
+      let tempMineField = [...mineField];
+      tempMineField.forEach((row, rowIdx) => {
+        row.forEach((_, colIdx) => {
+          if (tempMineField[rowIdx][colIdx].mine) {
+            tempMineField[rowIdx][colIdx].revealed = true;
+          }
+        });
+      });
+      setMineField(tempMineField);
+    }
+  }, [gameLost]);
 
   const onClickBlock = (block, row, col) => {
     if (!block.revealed) {
       if (block.mine) {
-        console.log("Boom!");
+        setGameLost(true);
       } else {
         let tempMineField = [...mineField];
-        if (tempMineField[row][col].minesNearby) {
-          tempMineField[row][col].revealed = true;
-        } else {
-          tempMineField = revealAllValid(tempMineField, row, col);
-        }
+        tempMineField = revealNearby(tempMineField, row, col);
         setMineField(tempMineField);
       }
     }
@@ -93,11 +106,7 @@ function App() {
 
       depressed.forEach(([row, col]) => {
         if (allSolved && !tempMineField[row][col].mine) {
-          if (tempMineField[row][col].minesNearby) {
-            tempMineField[row][col].revealed = true;
-          } else {
-            tempMineField = revealAllValid(tempMineField, row, col);
-          }
+          tempMineField = revealNearby(tempMineField, row, col);
         }
         tempMineField[row][col].depressed = false;
       });
@@ -105,6 +114,15 @@ function App() {
       setDepressed([]);
     }
   };
+
+  function revealNearby(tempMineField, row, col) {
+    if (tempMineField[row][col].minesNearby) {
+      tempMineField[row][col].revealed = true;
+    } else {
+      tempMineField = revealAllValid(tempMineField, row, col);
+    }
+    return tempMineField;
+  }
 
   // Win condition
   if (mineField.flat().every((block) => !block.revealed === block.mine)) {
