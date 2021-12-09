@@ -187,6 +187,18 @@ function App() {
     }
   };
 
+  const blockConditionalFontColour = (block) => {
+    switch (block.minesNearby) {
+      case 1:
+        return "text-blue-700";
+      case 2:
+        return "text-green-600";
+      case 3:
+        return "text-red-600";
+      default:
+        return "text-gray-800";
+    }
+  };
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex flex-col items-center justify-center bg-gray-100 p-12 rounded ">
@@ -199,9 +211,10 @@ function App() {
               <div
                 key={block.id}
                 className={classNames(
-                  "h-8 w-8 m-px",
+                  "h-10 w-10 border shadow-inner flex items-center justify-center",
                   blockConditionalBackgroundColor(block),
-                  "shadow-inner text-2xl text-gray-900 flex items-center justify-center"
+                  "text-xl font-minesweeper",
+                  blockConditionalFontColour(block)
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
