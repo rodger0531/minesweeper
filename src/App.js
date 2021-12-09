@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import classNames from "classnames";
 import generateMineField from "./utils/generateMineFIeld";
 import { revealAllValid } from "./utils";
+import { Timer } from "./timer";
 
 const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
 
 // Todo:
-// wrong flag - display cross with mine
-// red background with clicked wrong mine
 // add timer
 // add flags placed display
 
@@ -178,14 +177,20 @@ function App() {
         return "text-gray-800";
     }
   };
+
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex flex-col items-center justify-center bg-gray-100 p-12 rounded ">
-        <div className="mb-8 transform rotate-90">
-          <span className="align-middle text-3xl font-bold">
-            {emojiConditionalDisplay()}
-          </span>
+        <div className="flex w-full mb-8">
+          <Timer />
+          <div className="flex items-center justify-center w-1/3">
+            <div className="transform rotate-90 align-middle text-3xl font-bold">
+              {emojiConditionalDisplay()}
+            </div>
+          </div>
+          <div className="w-1/3"></div>
         </div>
+
         <div className="grid grid-cols-10">
           {mineField.map((row, rowIdx) =>
             row.map((block, colIdx) => (
