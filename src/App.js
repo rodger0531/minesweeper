@@ -4,10 +4,9 @@ import generateMineField from "./utils/generateMineFIeld";
 import { revealAllValid } from "./utils";
 
 const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
-const [mineLocations, initialMineField] = generateMineField();
 
 function App() {
-  const [mineField, setMineField] = useState(initialMineField);
+  const [mineField, setMineField] = useState(generateMineField());
   const [depressed, setDepressed] = useState([]);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.PLAYING);
   const [clicking, setClicking] = useState(false);

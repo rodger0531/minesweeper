@@ -16,7 +16,7 @@ export default function generateMineField() {
       };
     })
   );
-  return [mineLocation, generateDistanceMap(mineGrid)];
+  return generateDistanceMap(mineGrid);
 }
 
 function generateDistanceMap(arr) {
