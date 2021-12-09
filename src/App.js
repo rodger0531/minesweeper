@@ -211,6 +211,11 @@ function App() {
                 onMouseDown={(e) => mouseDownHandler(e, block, rowIdx, colIdx)}
                 onMouseUp={mouseUpHandler}
               >
+                {gameStatus === GAME_STATUS.LOST &&
+                  block.flagged &&
+                  !block.mine && (
+                    <div className="w-full h-full absolute wrong-flag" />
+                  )}
                 <span
                   className={classNames(
                     "flex items-center justify-center w-full h-full",
