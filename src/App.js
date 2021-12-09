@@ -26,6 +26,17 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStatus]);
 
+  // Win condition
+  useEffect(() => {
+    if (
+      mineField
+        .flat()
+        .every((block) => block.revealed || block.flagged === block.mine)
+    ) {
+      setGameStatus(GAME_STATUS.WIN);
+    }
+  }, [mineField]);
+
   const onClickBlock = (block, row, col) => {
     if (
       !block.revealed &&
@@ -57,7 +68,6 @@ function App() {
       block.revealed &&
       gameStatus === GAME_STATUS.PLAYING
     ) {
-      // Depress unflagged neighbouring blocks
       depressBlocks(row, col);
     }
   };
@@ -99,8 +109,6 @@ function App() {
 
   const mouseUpHandler = () => {
     if (depressed.length !== 0 && gameStatus === GAME_STATUS.PLAYING) {
-      // if not (but correct) show depressed blocks
-      // if wrong - lose
       let tempMineField = [...mineField];
 
       const wrongGuess = depressed.some(
@@ -134,19 +142,6 @@ function App() {
     return tempMineField;
   }
 
-  // Win condition
-  if (mineField.flat().every((block) => !block.revealed === block.mine)) {
-    console.log("Win!");
-    const tempMineField = [...mineField];
-    tempMineField.forEach((row, rowIdx) => {
-      row.forEach((_, colIdx) => {
-        if (tempMineField[rowIdx][colIdx].mine) {
-          tempMineField[rowIdx][colIdx].flagged = true;
-        }
-      });
-    });
-  }
-
   const blockConditionalDisplay = (block) => {
     if (block.revealed) {
       if (block.mine && !block.flagged) return "💥";
@@ -157,6 +152,9 @@ function App() {
   };
 
   const blockConditionalBackgroundColor = (block) => {
+    // For testing
+    // if (block.mine) return "bg-red-600";
+
     if (gameStatus === GAME_STATUS.LOST) {
       if (block.flagged) {
         if (!block.revealed) return "bg-red-300";
@@ -167,7 +165,8 @@ function App() {
 
     if (block.depressed && gameStatus === GAME_STATUS.PLAYING)
       return "bg-gray-500";
-    if (block.flagged) return "bg-gray-400";
+    if (block.flagged)
+      return gameStatus === GAME_STATUS.WIN ? "bg-green-700" : "bg-gray-400";
     if (block.revealed) return "bg-gray-500";
     else return "bg-gray-400";
   };
