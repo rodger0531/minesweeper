@@ -3,15 +3,16 @@ import classNames from "classnames";
 import generateMineField from "./utils/generateMineFIeld";
 import { revealAllValid } from "./utils";
 
+const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
 const [mineLocations, initialMineField] = generateMineField();
 
 function App() {
   const [mineField, setMineField] = useState(initialMineField);
   const [depressed, setDepressed] = useState([]);
-  const [gameLost, setGameLost] = useState(false);
+  const [gameStatus, setGameStatus] = useState(GAME_STATUS.PLAYING);
 
   useEffect(() => {
-    if (gameLost) {
+    if (gameStatus === GAME_STATUS.LOST) {
       let tempMineField = [...mineField];
       tempMineField.forEach((row, rowIdx) => {
         row.forEach((_, colIdx) => {
@@ -22,12 +23,17 @@ function App() {
       });
       setMineField(tempMineField);
     }
-  }, [gameLost]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameStatus]);
 
   const onClickBlock = (block, row, col) => {
-    if (!block.revealed) {
+    if (
+      !block.revealed &&
+      !block.flagged &&
+      gameStatus === GAME_STATUS.PLAYING
+    ) {
       if (block.mine) {
-        setGameLost(true);
+        setGameStatus(GAME_STATUS.LOST);
       } else {
         let tempMineField = [...mineField];
         tempMineField = revealNearby(tempMineField, row, col);
@@ -46,7 +52,11 @@ function App() {
   };
 
   const mouseDownHandler = (e, block, row, col) => {
-    if (e.button === 0 && block.revealed) {
+    if (
+      e.button === 0 &&
+      block.revealed &&
+      gameStatus === GAME_STATUS.PLAYING
+    ) {
       // Depress unflagged neighbouring blocks
       depressBlocks(row, col);
     }
@@ -88,7 +98,7 @@ function App() {
   };
 
   const mouseUpHandler = () => {
-    if (depressed.length !== 0) {
+    if (depressed.length !== 0 && gameStatus === GAME_STATUS.PLAYING) {
       // if not (but correct) show depressed blocks
       // if wrong - lose
       let tempMineField = [...mineField];
@@ -102,7 +112,7 @@ function App() {
           tempMineField[row][col].flagged === tempMineField[row][col].mine
       );
 
-      if (wrongGuess) console.log("lose");
+      if (wrongGuess) setGameStatus(GAME_STATUS.LOST);
 
       depressed.forEach(([row, col]) => {
         if (allSolved && !tempMineField[row][col].mine) {
