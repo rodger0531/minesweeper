@@ -173,6 +173,19 @@ function App() {
     }
   };
 
+  // Win condition
+  if (mineField.flat().every((block) => !block.revealed === block.mine)) {
+    console.log("Win!");
+    const tempMineField = [...mineField];
+    tempMineField.forEach((row, rowIdx) => {
+      row.forEach((_, colIdx) => {
+        if (tempMineField[rowIdx][colIdx].mine) {
+          tempMineField[rowIdx][colIdx].flagged = true;
+        }
+      });
+    });
+  }
+
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex items-center justify-center bg-gray-100 p-12 rounded ">
@@ -190,7 +203,7 @@ function App() {
                     : block.revealed
                     ? "bg-gray-500"
                     : "bg-gray-400",
-                  "shadow-inner text-gray-700 flex items-center justify-center"
+                  "shadow-inner text-gray-900 flex items-center justify-center"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
