@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { generateRandomUniqueNumbers } from "./utils";
+import { generateRandomUniqueNumbers } from "./";
 
 export default function generateMineField() {
   const mines = generateRandomUniqueNumbers(10, 100);
@@ -16,17 +16,22 @@ export default function generateMineField() {
       };
     })
   );
+  return generateDistanceMap(mineGrid);
+}
+
+function generateDistanceMap(arr) {
+  let newArr = [...arr];
 
   const processPoint = (x, y) => {
     if (x > -1 && y > -1 && x < 10 && y < 10) {
-      if (!mineGrid[x][y].mine) mineGrid[x][y].minesNearby++;
+      if (!arr[x][y].mine) arr[x][y].minesNearby = arr[x][y].minesNearby + 1;
     }
   };
 
-  mineGrid.forEach((row, rowIdx) => {
+  arr.forEach((row, rowIdx) => {
     row.forEach((col, colIdx) => {
       if (col.mine) {
-        mineGrid[rowIdx][colIdx].minesNearby = null;
+        arr[rowIdx][colIdx].minesNearby = null;
         processPoint(rowIdx - 1, colIdx - 1);
         processPoint(rowIdx - 1, colIdx);
         processPoint(rowIdx - 1, colIdx + 1);
@@ -39,5 +44,5 @@ export default function generateMineField() {
     });
   });
 
-  return mineGrid;
+  return newArr;
 }

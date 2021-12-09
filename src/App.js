@@ -1,6 +1,7 @@
 import { useState } from "react";
 import classNames from "classnames";
 import generateMineField from "./utils/generateMineFIeld";
+import { revealAllValid } from "./utils";
 
 function App() {
   const [mineField, setMineField] = useState(generateMineField());
@@ -18,24 +19,6 @@ function App() {
           tempMineField = revealAllValid(tempMineField, row, col);
         }
         setMineField(tempMineField);
-      }
-    }
-  };
-
-  const revealAllValid = (field, row, col) => {
-    const dir = [-1, 0, 1];
-    checkValid(row, col);
-    return field;
-    function checkValid(x, y) {
-      if (x > -1 && y > -1 && x < 10 && y < 10 && !field[x][y].revealed) {
-        field[x][y].revealed = true;
-        if (!field[x][y].minesNearby) {
-          for (let i = 0; i < dir.length; i++) {
-            for (let j = 0; j < dir.length; j++) {
-              checkValid(x + dir[i], y + dir[j]);
-            }
-          }
-        }
       }
     }
   };
