@@ -7,6 +7,11 @@
   src: url("./assets/fonts/mine-sweeper.otf");
 }
 
+@font-face {
+  font-family: "digital";
+  src: url("./assets/fonts/digital.ttf");
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

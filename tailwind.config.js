@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         minesweeper: "minesweeper",
+        digital: "digital",
       },
       colors: {
         green: colors.green,
