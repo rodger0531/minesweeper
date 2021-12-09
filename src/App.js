@@ -149,14 +149,10 @@ function App() {
 
   const blockConditionalDisplay = (block) => {
     if (block.revealed) {
-      if (block.mine) {
-        if (block.flagged) return "🚩";
-        else return "💥";
-      }
-      if (block.minesNearby !== 0) return block.minesNearby;
-    } else {
-      if (block.flagged) return "🚩";
+      if (block.mine && !block.flagged) return "💥";
+      if (!block.mine && block.minesNearby !== 0) return block.minesNearby;
     }
+    if (block.flagged) return "🚩";
     return "";
   };
 
@@ -169,7 +165,8 @@ function App() {
       }
     }
 
-    if (block.depressed) return "bg-gray-500";
+    if (block.depressed && gameStatus === GAME_STATUS.PLAYING)
+      return "bg-gray-500";
     if (block.flagged) return "bg-gray-400";
     if (block.revealed) return "bg-gray-500";
     else return "bg-gray-400";
