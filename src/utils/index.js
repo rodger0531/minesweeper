@@ -28,7 +28,8 @@ export function revealAllValid(field, row, col) {
       y > -1 &&
       x < field.length &&
       y < field[0].length &&
-      !field[x][y].revealed
+      !field[x][y].revealed &&
+      !field[x][y].flagged
     ) {
       field[x][y].revealed = true;
       if (!field[x][y].minesNearby) {
