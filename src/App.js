@@ -161,9 +161,8 @@ function App() {
         if (block.mine) return "bg-red-600";
       }
     }
-    if (block.flagged)
-      return gameStatus === GAME_STATUS.WIN ? "bg-green-700" : "bg-gray-400";
-    else return "bg-gray-400";
+    if (block.flagged && gameStatus === GAME_STATUS.WIN) return "bg-green-700";
+    return "bg-gray-400";
   };
 
   const emojiConditionalDisplay = () => {
@@ -196,7 +195,7 @@ function App() {
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex flex-col items-center justify-center bg-gray-100 p-12 rounded ">
         <div className="mb-8 transform rotate-90">
-          <span className="align-middle text-2xl font-bold">
+          <span className="align-middle text-3xl font-bold">
             {emojiConditionalDisplay()}
           </span>
         </div>
@@ -206,7 +205,7 @@ function App() {
               <div
                 key={block.id}
                 className={classNames(
-                  "h-10 w-10 border border-gray-500 shadow-inner relative flex items-center justify-center",
+                  "h-10 w-10 border border-gray-500 shadow-inner relative",
                   blockConditionalBackgroundColor(block),
                   "text-xl font-minesweeper",
                   blockConditionalFontColour(block),
