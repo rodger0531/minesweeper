@@ -27,3 +27,27 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.block-border::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: 4px outset #d4d4d4;
+}
+
+.block-flag::after {
+  content: url("./assets/images/flag_cropped.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.block-mine::after {
+  content: url("./assets/images/mine_cropped.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

@@ -5,6 +5,10 @@ import { revealAllValid } from "./utils";
 
 const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
 
+// Todo:
+// wrong flag - display cross with mine
+// red background with clicked wrong mine
+
 function App() {
   const [mineField, setMineField] = useState(generateMineField());
   const [depressed, setDepressed] = useState([]);
@@ -146,10 +150,10 @@ function App() {
 
   const blockConditionalDisplay = (block) => {
     if (block.revealed) {
-      if (block.mine && !block.flagged) return "💥";
+      // if (block.mine && !block.flagged) return "💥";
       if (!block.mine && block.minesNearby !== 0) return block.minesNearby;
     }
-    if (block.flagged) return "🚩";
+    // if (block.flagged) return "🚩";
     return "";
   };
 
@@ -164,20 +168,16 @@ function App() {
         if (block.mine) return "bg-red-600";
       }
     }
-
-    if (block.depressed && gameStatus === GAME_STATUS.PLAYING)
-      return "bg-gray-500";
     if (block.flagged)
       return gameStatus === GAME_STATUS.WIN ? "bg-green-700" : "bg-gray-400";
-    if (block.revealed) return "bg-gray-500";
     else return "bg-gray-400";
   };
 
   const emojiConditionalDisplay = () => {
-    if (clicking) return ": O";
+    if (clicking) return ":O";
     switch (gameStatus) {
       case GAME_STATUS.WIN:
-        return ":D";
+        return ":◗";
       case GAME_STATUS.LOST:
         return "Xᗡ";
       case GAME_STATUS.PLAYING:
@@ -203,7 +203,9 @@ function App() {
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex flex-col items-center justify-center bg-gray-100 p-12 rounded ">
         <div className="mb-8 transform rotate-90">
-          <span className="text-center">{emojiConditionalDisplay()}</span>
+          <span className="align-middle text-2xl font-bold">
+            {emojiConditionalDisplay()}
+          </span>
         </div>
         <div className="grid grid-cols-10">
           {mineField.map((row, rowIdx) =>
@@ -211,17 +213,27 @@ function App() {
               <div
                 key={block.id}
                 className={classNames(
-                  "h-10 w-10 border shadow-inner flex items-center justify-center",
+                  "h-10 w-10 border border-gray-500 shadow-inner relative flex items-center justify-center",
                   blockConditionalBackgroundColor(block),
                   "text-xl font-minesweeper",
-                  blockConditionalFontColour(block)
+                  blockConditionalFontColour(block),
+                  !block.revealed && !block.depressed && "block-border"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
                 onMouseDown={(e) => mouseDownHandler(e, block, rowIdx, colIdx)}
                 onMouseUp={mouseUpHandler}
               >
-                {blockConditionalDisplay(block)}
+                <span
+                  className={classNames(
+                    "flex items-center justify-center w-full h-full",
+                    block.flagged
+                      ? "block-flag"
+                      : block.mine && block.revealed && "block-mine"
+                  )}
+                >
+                  {blockConditionalDisplay(block)}
+                </span>
               </div>
             ))
           )}
