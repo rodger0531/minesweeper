@@ -8,6 +8,8 @@ const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
 // Todo:
 // wrong flag - display cross with mine
 // red background with clicked wrong mine
+// add timer
+// add flags placed display
 
 function App() {
   const [mineField, setMineField] = useState(generateMineField());
@@ -120,12 +122,12 @@ function App() {
           ([row, col]) =>
             tempMineField[row][col].flagged && !tempMineField[row][col].mine
         );
+
+        if (wrongGuess) return setGameStatus(GAME_STATUS.LOST);
         const allSolved = depressed.every(
           ([row, col]) =>
             tempMineField[row][col].flagged === tempMineField[row][col].mine
         );
-
-        if (wrongGuess) return setGameStatus(GAME_STATUS.LOST);
 
         depressed.forEach(([row, col]) => {
           if (allSolved && !tempMineField[row][col].mine) {
@@ -147,15 +149,6 @@ function App() {
     }
     return tempMineField;
   }
-
-  const blockConditionalDisplay = (block) => {
-    if (block.revealed) {
-      // if (block.mine && !block.flagged) return "💥";
-      if (!block.mine && block.minesNearby !== 0) return block.minesNearby;
-    }
-    // if (block.flagged) return "🚩";
-    return "";
-  };
 
   const blockConditionalBackgroundColor = (block) => {
     // For testing
@@ -217,7 +210,9 @@ function App() {
                   blockConditionalBackgroundColor(block),
                   "text-xl font-minesweeper",
                   blockConditionalFontColour(block),
-                  !block.revealed && !block.depressed && "block-border"
+                  ((!block.revealed && !block.depressed) ||
+                    (block.revealed && block.flagged)) &&
+                    "block-border"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
@@ -232,7 +227,9 @@ function App() {
                       : block.mine && block.revealed && "block-mine"
                   )}
                 >
-                  {blockConditionalDisplay(block)}
+                  {block.revealed && !block.mine && block.minesNearby !== 0
+                    ? block.minesNearby
+                    : ""}
                 </span>
               </div>
             ))
