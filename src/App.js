@@ -10,6 +10,7 @@ function App() {
   const [mineField, setMineField] = useState(initialMineField);
   const [depressed, setDepressed] = useState([]);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.PLAYING);
+  const [clicking, setClicking] = useState(false);
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.LOST) {
@@ -31,7 +32,7 @@ function App() {
     if (
       mineField
         .flat()
-        .every((block) => block.revealed || block.flagged === block.mine)
+        .every((block) => block.revealed || (block.flagged && block.mine))
     ) {
       setGameStatus(GAME_STATUS.WIN);
     }
@@ -55,7 +56,7 @@ function App() {
 
   const rightClick = (e, block, row, col) => {
     e.preventDefault();
-    if (!block.revealed) {
+    if (gameStatus === GAME_STATUS.PLAYING && !block.revealed) {
       const tempMineField = [...mineField];
       tempMineField[row][col].flagged = !tempMineField[row][col].flagged;
       setMineField([...tempMineField]);
@@ -63,12 +64,11 @@ function App() {
   };
 
   const mouseDownHandler = (e, block, row, col) => {
-    if (
-      e.button === 0 &&
-      block.revealed &&
-      gameStatus === GAME_STATUS.PLAYING
-    ) {
-      depressBlocks(row, col);
+    if (gameStatus === GAME_STATUS.PLAYING) {
+      setClicking(true);
+      if (e.button === 0 && block.revealed) {
+        depressBlocks(row, col);
+      }
     }
   };
 
@@ -108,28 +108,31 @@ function App() {
   };
 
   const mouseUpHandler = () => {
-    if (depressed.length !== 0 && gameStatus === GAME_STATUS.PLAYING) {
-      let tempMineField = [...mineField];
+    if (gameStatus === GAME_STATUS.PLAYING) {
+      setClicking(false);
+      if (depressed.length !== 0) {
+        let tempMineField = [...mineField];
 
-      const wrongGuess = depressed.some(
-        ([row, col]) =>
-          tempMineField[row][col].flagged && !tempMineField[row][col].mine
-      );
-      const allSolved = depressed.every(
-        ([row, col]) =>
-          tempMineField[row][col].flagged === tempMineField[row][col].mine
-      );
+        const wrongGuess = depressed.some(
+          ([row, col]) =>
+            tempMineField[row][col].flagged && !tempMineField[row][col].mine
+        );
+        const allSolved = depressed.every(
+          ([row, col]) =>
+            tempMineField[row][col].flagged === tempMineField[row][col].mine
+        );
 
-      if (wrongGuess) return setGameStatus(GAME_STATUS.LOST);
+        if (wrongGuess) return setGameStatus(GAME_STATUS.LOST);
 
-      depressed.forEach(([row, col]) => {
-        if (allSolved && !tempMineField[row][col].mine) {
-          tempMineField = revealNearby(tempMineField, row, col);
-        }
-        tempMineField[row][col].depressed = false;
-      });
-      setMineField(tempMineField);
-      setDepressed([]);
+        depressed.forEach(([row, col]) => {
+          if (allSolved && !tempMineField[row][col].mine) {
+            tempMineField = revealNearby(tempMineField, row, col);
+          }
+          tempMineField[row][col].depressed = false;
+        });
+        setMineField(tempMineField);
+        setDepressed([]);
+      }
     }
   };
 
@@ -171,18 +174,35 @@ function App() {
     else return "bg-gray-400";
   };
 
+  const emojiConditionalDisplay = () => {
+    if (clicking) return ": O";
+    switch (gameStatus) {
+      case GAME_STATUS.WIN:
+        return ":D";
+      case GAME_STATUS.LOST:
+        return "Xᗡ";
+      case GAME_STATUS.PLAYING:
+        return ": )";
+      default:
+        return;
+    }
+  };
+
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
-      <div className="flex items-center justify-center bg-gray-100 p-12 rounded ">
+      <div className="flex flex-col items-center justify-center bg-gray-100 p-12 rounded ">
+        <div className="mb-8 transform rotate-90">
+          <span className="text-center">{emojiConditionalDisplay()}</span>
+        </div>
         <div className="grid grid-cols-10">
           {mineField.map((row, rowIdx) =>
             row.map((block, colIdx) => (
               <div
                 key={block.id}
                 className={classNames(
-                  "h-6 w-6 m-px",
+                  "h-8 w-8 m-px",
                   blockConditionalBackgroundColor(block),
-                  "shadow-inner text-gray-900 flex items-center justify-center"
+                  "shadow-inner text-2xl text-gray-900 flex items-center justify-center"
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
