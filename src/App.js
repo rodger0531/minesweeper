@@ -112,7 +112,7 @@ function App() {
           tempMineField[row][col].flagged === tempMineField[row][col].mine
       );
 
-      if (wrongGuess) setGameStatus(GAME_STATUS.LOST);
+      if (wrongGuess) return setGameStatus(GAME_STATUS.LOST);
 
       depressed.forEach(([row, col]) => {
         if (allSolved && !tempMineField[row][col].mine) {
