@@ -1,59 +1,9 @@
 import { useState } from "react";
-import { nanoid } from "nanoid";
 import classNames from "classnames";
-
-const nums = new Set();
-while (nums.size !== 10) {
-  nums.add(Math.floor(Math.random() * 100));
-}
-
-let mines = [...nums].sort((a, b) => a - b);
-mines = mines.map((num) => [Math.floor(num / 10), num % 10]);
-
-const hasMine = (row, col) => {
-  if (mines.length === 0) return false;
-  if (mines[0][0] === row && mines[0][1] === col) {
-    mines.shift();
-    return true;
-  } else return false;
-};
-let mineGrid = new Array(10).fill().map((_, row) =>
-  new Array(10).fill().map((_, col) => {
-    return {
-      mine: hasMine(row, col),
-      minesNearby: 0,
-      revealed: false,
-      depressed: false,
-      flagged: false,
-      id: nanoid(),
-    };
-  })
-);
-
-const processPoint = (x, y) => {
-  if (x > -1 && y > -1 && x < 10 && y < 10) {
-    if (!mineGrid[x][y].mine) mineGrid[x][y].minesNearby++;
-  }
-};
-
-mineGrid.forEach((row, rowIdx) => {
-  row.forEach((col, colIdx) => {
-    if (col.mine) {
-      mineGrid[rowIdx][colIdx].minesNearby = null;
-      processPoint(rowIdx - 1, colIdx - 1);
-      processPoint(rowIdx - 1, colIdx);
-      processPoint(rowIdx - 1, colIdx + 1);
-      processPoint(rowIdx, colIdx - 1);
-      processPoint(rowIdx, colIdx + 1);
-      processPoint(rowIdx + 1, colIdx - 1);
-      processPoint(rowIdx + 1, colIdx);
-      processPoint(rowIdx + 1, colIdx + 1);
-    }
-  });
-});
+import generateMineField from "./utils/generateMineFIeld";
 
 function App() {
-  const [mineField, setMineField] = useState(mineGrid);
+  const [mineField, setMineField] = useState(generateMineField());
   const [depressed, setDepressed] = useState([]);
 
   const onClickBlock = (block, row, col) => {
