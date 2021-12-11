@@ -12,7 +12,7 @@ function App() {
   const [depressed, setDepressed] = useState([]);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.RESET);
   const [clicking, setClicking] = useState(false);
-  const [clickedMine, setClickedMine] = useState();
+  const [clickedMine, setClickedMine] = useState({ row: null, col: null });
   const [numberOfFlags, setNumberOfFlags] = useState(10);
 
   useEffect(() => {
@@ -38,6 +38,7 @@ function App() {
         .every((block) => block.revealed || (block.flagged && block.mine))
     ) {
       setGameStatus(GAME_STATUS.WIN);
+      setClicking(false);
     }
   }, [mineField]);
 

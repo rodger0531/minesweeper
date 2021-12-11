@@ -2,7 +2,6 @@ import React from "react";
 import { GAME_STATUS } from "./utils/constants";
 
 export const RestartButton = ({ resetGame, gameStatus }) => {
-  console.log(gameStatus);
   return (
     <>
       <button onClick={resetGame} className="focus:outline-none">
