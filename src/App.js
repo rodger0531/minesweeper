@@ -4,7 +4,7 @@ import generateMineField from "./utils/generateMineFIeld";
 import { revealAllValid } from "./utils";
 import { Timer } from "./timer";
 
-const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
+const GAME_STATUS = { RESET: 0, PLAYING: 1, WIN: 2, LOST: 3 };
 
 // Todo:
 // add timer
@@ -13,7 +13,7 @@ const GAME_STATUS = { PLAYING: 0, WIN: 1, LOST: 2 };
 function App() {
   const [mineField, setMineField] = useState(generateMineField());
   const [depressed, setDepressed] = useState([]);
-  const [gameStatus, setGameStatus] = useState(GAME_STATUS.PLAYING);
+  const [gameStatus, setGameStatus] = useState(GAME_STATUS.RESET);
   const [clicking, setClicking] = useState(false);
   const [clickedMine, setClickedMine] = useState();
 
@@ -44,10 +44,12 @@ function App() {
   }, [mineField]);
 
   const onClickBlock = (block, row, col) => {
+    if (gameStatus === GAME_STATUS.RESET) setGameStatus(GAME_STATUS.PLAYING);
+
     if (
       !block.revealed &&
       !block.flagged &&
-      gameStatus === GAME_STATUS.PLAYING
+      (gameStatus === GAME_STATUS.PLAYING || gameStatus === GAME_STATUS.RESET)
     ) {
       if (block.mine) {
         setGameStatus(GAME_STATUS.LOST);
@@ -62,7 +64,11 @@ function App() {
 
   const rightClick = (e, block, row, col) => {
     e.preventDefault();
-    if (gameStatus === GAME_STATUS.PLAYING && !block.revealed) {
+    if (
+      (gameStatus === GAME_STATUS.PLAYING ||
+        gameStatus === GAME_STATUS.RESET) &&
+      !block.revealed
+    ) {
       const tempMineField = [...mineField];
       tempMineField[row][col].flagged = !tempMineField[row][col].flagged;
       setMineField([...tempMineField]);
@@ -70,7 +76,10 @@ function App() {
   };
 
   const mouseDownHandler = (e, block, row, col) => {
-    if (gameStatus === GAME_STATUS.PLAYING) {
+    if (
+      gameStatus === GAME_STATUS.PLAYING ||
+      gameStatus === GAME_STATUS.RESET
+    ) {
       setClicking(true);
       if (e.button === 0 && block.revealed) {
         depressBlocks(row, col);
@@ -114,7 +123,10 @@ function App() {
   };
 
   const mouseUpHandler = () => {
-    if (gameStatus === GAME_STATUS.PLAYING) {
+    if (
+      gameStatus === GAME_STATUS.PLAYING ||
+      gameStatus === GAME_STATUS.RESET
+    ) {
       setClicking(false);
       if (depressed.length !== 0) {
         let tempMineField = [...mineField];
@@ -159,6 +171,7 @@ function App() {
       case GAME_STATUS.LOST:
         return "Xᗡ";
       case GAME_STATUS.PLAYING:
+      case GAME_STATUS.RESET:
         return ": )";
       default:
         return;
@@ -182,7 +195,7 @@ function App() {
     <div className="flex items-center justify-center w-screen h-screen bg-gray-900">
       <div className="flex flex-col items-center justify-center bg-gray-100 p-12 rounded ">
         <div className="flex w-full mb-8">
-          <Timer />
+          <Timer isStart={gameStatus === GAME_STATUS.PLAYING} />
           <div className="flex items-center justify-center w-1/3">
             <div className="transform rotate-90 align-middle text-3xl font-bold">
               {emojiConditionalDisplay()}
