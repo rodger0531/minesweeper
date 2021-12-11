@@ -6,16 +6,13 @@ import { Timer } from "./timer";
 
 const GAME_STATUS = { RESET: 0, PLAYING: 1, WIN: 2, LOST: 3 };
 
-// Todo:
-// add timer
-// add flags placed display
-
 function App() {
   const [mineField, setMineField] = useState(generateMineField());
   const [depressed, setDepressed] = useState([]);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.RESET);
   const [clicking, setClicking] = useState(false);
   const [clickedMine, setClickedMine] = useState();
+  const [numberOfFlags, setNumberOfFlags] = useState(10);
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.LOST) {
@@ -70,6 +67,10 @@ function App() {
       !block.revealed
     ) {
       const tempMineField = [...mineField];
+      setNumberOfFlags((prev) => {
+        tempMineField[row][col].flagged ? prev-- : prev++;
+        return prev;
+      });
       tempMineField[row][col].flagged = !tempMineField[row][col].flagged;
       setMineField([...tempMineField]);
     }
@@ -201,7 +202,9 @@ function App() {
               {emojiConditionalDisplay()}
             </div>
           </div>
-          <div className="w-1/3"></div>
+          <div className="w-1/3 flex justify-end text-5xl font-medium font-digital text-red-600">
+            {numberOfFlags}
+          </div>
         </div>
 
         <div className="grid grid-cols-10">
