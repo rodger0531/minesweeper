@@ -173,6 +173,26 @@ function App() {
     setNumberOfFlags(10);
   };
 
+  const renderBlockClassName = (block, row, col) => {
+    let name = "";
+    name +=
+      block.flagged && gameStatus === GAME_STATUS.WIN
+        ? "bg-green-700"
+        : "bg-gray-400";
+
+    name += " " + blockConditionalFontColour(block);
+    name +=
+      (!block.revealed && !block.depressed) || (block.revealed && block.flagged)
+        ? " block-border"
+        : "";
+    name +=
+      clickedMine && row === clickedMine.row && col === clickedMine.col
+        ? " bg-red-600"
+        : "";
+
+    return name;
+  };
+
   const emojiConditionalDisplay = () => {
     if (clicking) return ":O";
     switch (gameStatus) {
@@ -225,19 +245,8 @@ function App() {
               <div
                 key={block.id}
                 className={classNames(
-                  "h-10 w-10 border border-gray-500 shadow-inner relative",
-                  block.flagged && gameStatus === GAME_STATUS.WIN
-                    ? "bg-green-700"
-                    : "bg-gray-400",
-                  "text-xl font-minesweeper",
-                  blockConditionalFontColour(block),
-                  ((!block.revealed && !block.depressed) ||
-                    (block.revealed && block.flagged)) &&
-                    "block-border",
-                  clickedMine &&
-                    rowIdx === clickedMine.row &&
-                    colIdx === clickedMine.col &&
-                    "bg-red-600"
+                  "h-10 w-10 border border-gray-500 shadow-inner relative text-xl font-minesweeper",
+                  renderBlockClassName(block, rowIdx, colIdx)
                 )}
                 onClick={() => onClickBlock(block, rowIdx, colIdx)}
                 onContextMenu={(e) => rightClick(e, block, rowIdx, colIdx)}
