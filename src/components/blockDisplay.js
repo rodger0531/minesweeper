@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import { GAME_STATUS } from "./utils/constants";
+import { GAME_STATUS } from "../utils/constants";
 
 export const BlockDisplay = ({ block, gameStatus }) => {
   return (

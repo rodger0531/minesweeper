@@ -1,5 +1,5 @@
 import React from "react";
-import { GAME_STATUS } from "./utils/constants";
+import { GAME_STATUS } from "../utils/constants";
 
 export const RestartButton = ({ resetGame, gameStatus }) => {
   return (

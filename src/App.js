@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import classNames from "classnames";
 import generateMineField from "./utils/generateMineFIeld";
 import { revealAllValid } from "./utils";
-import { Timer } from "./timer";
+import { Timer } from "./components/timer";
 import { GAME_STATUS } from "./utils/constants";
-import { RestartButton } from "./restartButton";
-import { BlockDisplay } from "./blockDisplay";
+import { RestartButton } from "./components/restartButton";
+import { BlockDisplay } from "./components/blockDisplay";
 
 function App() {
   const [mineField, setMineField] = useState(generateMineField());

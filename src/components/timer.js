@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { GAME_STATUS } from "./utils/constants";
+import { GAME_STATUS } from "../utils/constants";
 
 export const Timer = ({ gameStatus }) => {
   const [seconds, setSeconds] = useState(0);
